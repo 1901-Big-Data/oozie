@@ -1,0 +1,29 @@
+<workflow-app name="oozie-lab" xmlns="uri:oozie:workflow:0.4">
+    <!-- Start job control node -->
+    <start to="sqoop-export" />
+    
+     <!-- Sqoop Import from flat file to MySQL Action Node -->
+    <action name="sqoop-export">
+        <sqoop xmlns="uri:oozie:sqoop-action:0.2">
+            <job-tracker>${job_tracker}</job-tracker>
+            <name-node>${name_node}</name-node>
+            <command>job --meta-connect ${sqoop_metastore} --exec student_job</command>
+        </sqoop>
+
+        <ok to="end" />
+        <error to="kill" />
+    </action>
+
+    <!-- Kill job control node -->
+    <kill name="kill">
+        <message>Oozie job terminated with errors.</message>
+    </kill>
+
+    <!-- End job control node -->
+    <end name="end" />
+
+
+    <!--prepare>
+        <delete path="output/oozie-job"/>
+    </prepare>-->
+</workflow-app>

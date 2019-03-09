@@ -1,0 +1,13 @@
+oozie job -oozie http://quickstart.cloudera:11000/oozie \
+-D oozie.wf.application.path oozie-config/workflow.xml \
+-config job.properties \ 
+-run
+
+oozie job -oozie http://quickstart.cloudera:11000/oozie -info <job>
+oozie job -oozie http://quickstart.cloudera:11000/oozie -kill <job>
+oozie job -oozie http://quickstart.cloudera:11000/oozie -start <job>
+oozie job -oozie http://quickstart.cloudera:11000/oozie -suspend <job>
+oozie job -oozie http://quickstart.cloudera:11000/oozie -resume <job>
+oozie job -oozie http://quickstart.cloudera:11000/oozie -log <job>
+
+---> You can check or control the jobs in Hue

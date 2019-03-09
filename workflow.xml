@@ -1,0 +1,81 @@
+<workflow-app name="oozie-lab" xmlns="uri:oozie:workflow:0.4">
+    <!-- Start job control node -->
+    <start to="hive-create" />
+    
+    <!-- Hive table creation -->
+    <action name="hive-create">
+        <hive xmlns="uri:oozie:hive-action:0.4">
+            <job-tracker>${job_tracker}</job-tracker>
+            <name-node>${name_node}</name-node>
+            <!-- Set up connection to the actual Hive Metastore -->
+            <configuration>
+                <property>
+                    <name>hive.metastore.uris</name>
+                    <value>thrift://localhost:9083</value>
+                </property>
+            </configuration>
+            <script>${scripts_location}/create.sql</script>
+        </hive>
+
+        <ok to="hive-load" />
+        <error to="kill" />
+    </action>
+
+    <!-- Hive table loading -->
+    <action name="hive-load">
+        <hive xmlns="uri:oozie:hive-action:0.4">
+            <job-tracker>${job_tracker}</job-tracker>
+            <name-node>${name_node}</name-node>
+            <!-- Set up connection to the actual Hive Metastore -->
+            <configuration>
+                <property>
+                    <name>hive.metastore.uris</name>
+                    <value>thrift://localhost:9083</value>
+                </property>
+            </configuration>
+            <script>${scripts_location}/load.sql</script>
+        </hive>
+
+        <ok to="hive-store-select" />
+        <error to="kill" />
+    </action>
+
+    <!-- Hive store as select -->
+    <action name="hive-store-select">
+        <hive xmlns="uri:oozie:hive-action:0.4">
+            <job-tracker>${job_tracker}</job-tracker>
+            <name-node>${name_node}</name-node>
+            <!-- Set up connection to the actual Hive Metastore -->
+            <configuration>
+                <property>
+                    <name>hive.metastore.uris</name>
+                    <value>thrift://localhost:9083</value>
+                </property>
+            </configuration>
+            <script>${scripts_location}/store-select.sql</script>
+        </hive>
+
+        <ok to="pig-processing" />
+        <error to="kill" />
+    </action>
+
+    <!-- Pig Processing -->
+    <action name="pig-processing">
+        <pig>
+            <job-tracker>${job_tracker}</job-tracker>
+            <name-node>${name_node}</name-node>
+            <script>${scripts_location}/processing.pig</script>
+        </pig>
+
+        <ok to="end" />
+        <error to="kill" />
+    </action>
+
+    <!-- Kill job control node -->
+    <kill name="kill">
+        <message>Oozie job terminated with errors.</message>
+    </kill>
+
+    <!-- End job control node -->
+    <end name="end" />
+</workflow-app>
